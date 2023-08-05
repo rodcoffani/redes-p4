@@ -52,7 +52,7 @@ finally:
 
 ## Adiante o seu T5!
 
-O arquivo `exemplo_integracao.py` gruda todas as camadas implementadas até o momento, disponibilizando uma implementação completa de TCP/IP/SLIP que funciona totalmente à parte da implementação do *kernel* Linux.
+O arquivo `exemplo_integracao.py` gruda todas as camadas implementadas até o momento, disponibilizando uma implementação completa de TCP/IP/SLIP que funciona totalmente à parte da implementação do *kernel* Linux
 
 O Linux também possui uma implementação de SLIP, então é possível colocar ambas as implementações para conversar, como se fossem máquinas diferentes (mesmo que estejam executando no mesmo computador). Para fazer isso, execute `./exemplo_integracao.py` e siga as instruções da tela.
 
