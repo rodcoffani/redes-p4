@@ -43,6 +43,8 @@ class Enlace:
     def __init__(self, linha_serial):
         self.linha_serial = linha_serial
         self.linha_serial.registrar_recebedor(self.__raw_recv)
+        self.mensagem = b''
+
 
     def registrar_recebedor(self, callback):
         self.callback = callback
@@ -54,16 +56,14 @@ class Enlace:
 
         # Caracter de escape para o byte 0xDB
         datagrama = datagrama.replace(b'\xDB', b'\xDB\xDD')
-        
-
         # Caracter de escape para o byte 0xC0
         datagrama = datagrama.replace(b'\xC0', b'\xDB\xDC')
 
 
         # Adiciona o byte de delimitação no início e no fim do datagrama
         datagrama = b'\xC0' + datagrama + b'\xC0'
+
         self.linha_serial.enviar(datagrama)
-        pass
 
     def __raw_recv(self, dados):
         # TODO: Preencha aqui com o código para receber dados da linha serial.
@@ -73,4 +73,15 @@ class Enlace:
         # vir quebrado de várias formas diferentes - por exemplo, podem vir
         # apenas pedaços de um quadro, ou um pedaço de quadro seguido de um
         # pedaço de outro, ou vários quadros de uma vez só.
+
+        # Recebe os dados quebrados
+        for dado in dados:
+            if dado == 0xC0:
+                # Se está no começo do datagrama, ignora
+                if len(self.mensagem) != 0:
+                    self.callback(bytes(self.mensagem))
+                    self.mensagem = b''
+            else:
+                self.mensagem += bytes([dado])
+
         pass
