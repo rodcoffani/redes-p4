@@ -95,8 +95,16 @@ class Enlace:
             elif dado == 0xC0:
                 # Se está no começo do datagrama, ignora
                 if len(self.mensagem) != 0:
-                    self.callback(bytes(self.mensagem))
-                    self.mensagem = b''
+                    try:
+                        self.callback(self.mensagem)
+                    except:
+                        # ignora a exceção, mas mostra na tela
+                        import traceback
+                        traceback.print_exc()
+                    finally:
+                        # faça aqui a limpeza necessária para garantir que não vão sobrar
+                        # pedaços do datagrama em nenhum buffer mantido por você
+                        self.mensagem = b''
             else:
                 self.mensagem += bytes([dado])
     
