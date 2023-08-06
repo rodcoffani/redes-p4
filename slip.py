@@ -44,6 +44,7 @@ class Enlace:
         self.linha_serial = linha_serial
         self.linha_serial.registrar_recebedor(self.__raw_recv)
         self.mensagem = b''
+        self.escape_char = False
 
 
     def registrar_recebedor(self, callback):
@@ -76,12 +77,27 @@ class Enlace:
 
         # Recebe os dados quebrados
         for dado in dados:
-            if dado == 0xC0:
+            # Confere se é um caractere de escape
+            if self.escape_char:
+                # 0xDB 0xDC:
+                if dado == 0xDC:
+                    self.mensagem += bytes([0xC0])
+                # 0xDB 0xDD:
+                else:
+                    self.mensagem += bytes([0xDB])
+                self.escape_char = False
+
+            # Vai começar um caractere de escape
+            elif dado == 0xDB:
+                self.escape_char = True
+
+            # Não precisou de escape e confere se é o fim do datagrama                
+            elif dado == 0xC0:
                 # Se está no começo do datagrama, ignora
                 if len(self.mensagem) != 0:
                     self.callback(bytes(self.mensagem))
                     self.mensagem = b''
             else:
                 self.mensagem += bytes([dado])
-
+    
         pass
